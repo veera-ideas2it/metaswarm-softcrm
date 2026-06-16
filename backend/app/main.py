@@ -93,8 +93,10 @@ def create_app() -> FastAPI:
     # ---------------------------------------------------------------------------
     # Routers – register as they are created
     # ---------------------------------------------------------------------------
-    # from app.routers import auth, users, companies, contacts, deals, activities
-    # application.include_router(auth.router, prefix="/api/v1")
+    from app.routers import auth  # noqa: PLC0415
+
+    application.include_router(auth.router, prefix="/api/v1/auth")
+    # from app.routers import users, companies, contacts, deals, activities
     # application.include_router(users.router, prefix="/api/v1")
     # application.include_router(companies.router, prefix="/api/v1")
     # application.include_router(contacts.router, prefix="/api/v1")
