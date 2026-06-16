@@ -1,0 +1,39 @@
+# Agent OS Standards Index
+# Auto-used by /inject-standards to detect which standards are relevant
+# Format: detection keywords → standards file to inject
+
+version: "3.0"
+
+standards:
+  - file: global/naming-conventions.md
+    description: Naming rules for files, functions, DB, and routes
+    detect:
+      keywords: [naming, conventions, file, folder, route, column, table]
+      always: true   # inject this in every session
+
+  - file: backend/python-fastapi.md
+    description: Python FastAPI patterns, layering, auth, response format
+    detect:
+      keywords: [python, fastapi, backend, router, service, model, schema,
+                 pydantic, sqlalchemy, alembic, migration, endpoint, api,
+                 async, uvicorn, auth, jwt, bcrypt]
+
+  - file: frontend/react-typescript.md
+    description: React 18 + TypeScript + Tailwind + TanStack Query patterns
+    detect:
+      keywords: [react, typescript, frontend, component, hook, zustand,
+                 tanstack, query, form, zod, tailwind, vite, page,
+                 axios, dnd, recharts]
+
+  - file: database/postgres.md
+    description: PostgreSQL conventions, indexes, soft delete, migrations
+    detect:
+      keywords: [database, postgres, postgresql, table, column, index,
+                 migration, alembic, uuid, foreign key, soft delete,
+                 query, orm]
+
+  - file: api/conventions.md
+    description: REST API route patterns, request/response format, error codes
+    detect:
+      keywords: [api, endpoint, route, request, response, rest, http,
+                 pagination, filter, sort, error, status code]
