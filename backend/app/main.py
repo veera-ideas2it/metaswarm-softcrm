@@ -7,17 +7,12 @@ from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
-from slowapi.util import get_remote_address
 
 from app.config import settings
-
-# ---------------------------------------------------------------------------
-# Rate limiter (shared instance – imported by routers that need per-route limits)
-# ---------------------------------------------------------------------------
-limiter = Limiter(key_func=get_remote_address, default_limits=["100/minute"])
+from app.limiter import limiter  # noqa: F401 — re-exported for backwards compat
 
 
 # ---------------------------------------------------------------------------
@@ -99,7 +94,7 @@ def create_app() -> FastAPI:
     from app.routers import activities  # noqa: PLC0415
     from app.routers import contacts  # noqa: PLC0415
     from app.routers import companies  # noqa: PLC0415
-    from app.routers import settings  # noqa: PLC0415
+    from app.routers import settings as settings_router  # noqa: PLC0415
 
     application.include_router(auth.router, prefix="/api/v1/auth")
     application.include_router(reports.router, prefix="/api/v1/reports")
@@ -107,7 +102,7 @@ def create_app() -> FastAPI:
     application.include_router(activities.router, prefix="/api/v1")
     application.include_router(contacts.router, prefix="/api/v1")
     application.include_router(companies.router, prefix="/api/v1")
-    application.include_router(settings.router, prefix="/api/v1")
+    application.include_router(settings_router.router, prefix="/api/v1")
     # from app.routers import users
     # application.include_router(users.router, prefix="/api/v1")
 

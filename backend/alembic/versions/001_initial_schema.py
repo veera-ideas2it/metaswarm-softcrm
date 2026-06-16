@@ -27,28 +27,7 @@ def upgrade() -> None:
     op.execute('CREATE EXTENSION IF NOT EXISTS "pgcrypto"')
 
     # ------------------------------------------------------------------
-    # ENUM types
-    # ------------------------------------------------------------------
-    user_role = postgresql.ENUM("admin", "manager", "rep", name="user_role", create_type=False)
-    user_role.create(op.get_bind(), checkfirst=True)
-
-    company_size = postgresql.ENUM(
-        "startup", "smb", "mid_market", "enterprise", name="company_size", create_type=False
-    )
-    company_size.create(op.get_bind(), checkfirst=True)
-
-    deal_type = postgresql.ENUM(
-        "new_business", "expansion", "renewal", name="deal_type", create_type=False
-    )
-    deal_type.create(op.get_bind(), checkfirst=True)
-
-    activity_type = postgresql.ENUM(
-        "call", "email", "meeting", "note", "task", name="activity_type", create_type=False
-    )
-    activity_type.create(op.get_bind(), checkfirst=True)
-
-    # ------------------------------------------------------------------
-    # users
+    # users  (user_role enum created implicitly by op.create_table)
     # ------------------------------------------------------------------
     op.create_table(
         "users",
@@ -66,7 +45,7 @@ def upgrade() -> None:
     op.create_index("ix_users_email", "users", ["email"], unique=True)
 
     # ------------------------------------------------------------------
-    # companies
+    # companies  (company_size enum created implicitly)
     # ------------------------------------------------------------------
     op.create_table(
         "companies",
@@ -107,7 +86,7 @@ def upgrade() -> None:
     op.create_index("ix_contacts_created_by", "contacts", ["created_by"])
 
     # ------------------------------------------------------------------
-    # deals
+    # deals  (deal_type enum created implicitly)
     # ------------------------------------------------------------------
     op.create_table(
         "deals",
@@ -139,7 +118,7 @@ def upgrade() -> None:
     op.create_index("ix_deals_expected_close_date", "deals", ["expected_close_date"])
 
     # ------------------------------------------------------------------
-    # activities
+    # activities  (activity_type enum created implicitly)
     # ------------------------------------------------------------------
     op.create_table(
         "activities",

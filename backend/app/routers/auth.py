@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Request, Response, status
 from sqlalchemy import select
@@ -8,7 +7,7 @@ from app.auth.dependencies import get_current_user
 from app.auth.jwt import create_access_token, create_refresh_token, verify_token
 from app.auth.password import verify_password
 from app.database import get_db
-from app.main import limiter
+from app.limiter import limiter
 from app.models.user import User
 from app.schemas.auth import LoginRequest, RefreshResponse, TokenResponse, UserResponse
 

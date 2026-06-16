@@ -1,19 +1,14 @@
 from __future__ import annotations
 
-import asyncio
 import os
 import sys
 from logging.config import fileConfig
 
 from alembic import context
-from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy import create_engine, pool
 
-# ---------------------------------------------------------------------------
-# Make sure the app package is importable (alembic is run from backend/)
-# ---------------------------------------------------------------------------
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Import all models so that Base.metadata is fully populated
 from app.models import (  # noqa: F401 E402
     User,
     Company,
@@ -24,59 +19,41 @@ from app.models import (  # noqa: F401 E402
 )
 from app.database import Base  # noqa: E402
 
-# ---------------------------------------------------------------------------
-# Alembic Config object
-# ---------------------------------------------------------------------------
 config = context.config
 
-# Interpret the config file for Python logging.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 target_metadata = Base.metadata
 
-# Override sqlalchemy.url with the environment variable if provided
-DATABASE_URL = os.environ.get("DATABASE_URL", config.get_main_option("sqlalchemy.url"))
+# Convert asyncpg URL to psycopg2 for synchronous Alembic migrations
+_raw_url = os.environ.get("DATABASE_URL", config.get_main_option("sqlalchemy.url") or "")
+SYNC_DATABASE_URL = _raw_url.replace("postgresql+asyncpg://", "postgresql://")
 
 
 def run_migrations_offline() -> None:
-    """Run migrations in 'offline' mode.
-
-    This configures the context with just a URL and not an Engine.
-    Calls to context.execute() here emit the given string to the script output.
-    """
     context.configure(
-        url=DATABASE_URL,
+        url=SYNC_DATABASE_URL,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
         compare_type=True,
     )
-
     with context.begin_transaction():
         context.run_migrations()
-
-
-def do_run_migrations(connection):  # type: ignore[no-untyped-def]
-    context.configure(
-        connection=connection,
-        target_metadata=target_metadata,
-        compare_type=True,
-    )
-
-    with context.begin_transaction():
-        context.run_migrations()
-
-
-async def run_async_migrations() -> None:
-    engine = create_async_engine(DATABASE_URL, echo=False)
-    async with engine.connect() as connection:
-        await connection.run_sync(do_run_migrations)
-    await engine.dispose()
 
 
 def run_migrations_online() -> None:
-    asyncio.run(run_async_migrations())
+    engine = create_engine(SYNC_DATABASE_URL, poolclass=pool.NullPool)
+    with engine.connect() as connection:
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata,
+            compare_type=True,
+        )
+        with context.begin_transaction():
+            context.run_migrations()
+    engine.dispose()
 
 
 if context.is_offline_mode():
