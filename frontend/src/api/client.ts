@@ -1,13 +1,16 @@
 import axios from 'axios'
 import { useAuthStore } from '../store/authStore'
 
+// In Docker dev the Vite proxy forwards /api/* to the backend container.
+// VITE_API_BASE_URL overrides to a full URL (e.g. http://localhost:8000) when
+// running the backend directly without Docker.
 const baseURL =
   (import.meta as ImportMeta & { env: Record<string, string> }).env
-    .VITE_API_BASE_URL ?? '/api'
+    .VITE_API_BASE_URL ?? ''
 
 export const apiClient = axios.create({
   baseURL,
-  withCredentials: true, // send httpOnly cookies automatically
+  withCredentials: true,
 })
 
 // ---------------------------------------------------------------------------
@@ -66,7 +69,7 @@ apiClient.interceptors.response.use(
 
     try {
       const { data } = await axios.post<{ access_token: string }>(
-        `${baseURL}/v1/auth/refresh`,
+        `${baseURL}/api/v1/auth/refresh`,
         {},
         { withCredentials: true },
       )

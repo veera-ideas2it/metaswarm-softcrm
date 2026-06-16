@@ -32,22 +32,22 @@ engine = create_async_engine(settings.DATABASE_URL, echo=False)
 AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 # ---------------------------------------------------------------------------
-# Pipeline stages (must match PIPELINE_STAGES constant)
+# Pipeline stages (must match PIPELINE_STAGES in app/schemas/deal.py)
 # ---------------------------------------------------------------------------
 
 PIPELINE_STAGES = [
     "Lead",
-    "Qualified",
-    "Meeting Scheduled",
+    "MQL",
+    "Discovery Call",
+    "Demo Scheduled",
+    "Demo Done",
+    "Technical Validation",
+    "Security Review",
     "Proposal Sent",
     "Negotiation",
     "Contract Sent",
-    "Legal Review",
-    "Procurement",
-    "Verbal Commit",
-    "Closed Won",
-    "Closed Lost",
-    "On Hold",
+    "Won",
+    "Lost",
 ]
 
 
@@ -213,31 +213,32 @@ async def seed() -> None:
         alice, bob, carol, david, eve = contact_objs
 
         # ----------------------------------------------------------------
-        # Deals — 10 deals covering first 10 stages (1 Won, 0 Lost)
+        # Deals — 11 deals covering all active stages (1 Won, 0 Lost)
         # ----------------------------------------------------------------
-        # Stages index 0-9: Lead → Closed Won (index 9)
-        # Index 10 = Closed Lost, Index 11 = On Hold
-        # We create 10 deals; stages 0-8 each get one, stage 9 (Closed Won) gets 2,
-        # satisfying "at least 1 in each of first 10 stages, plus 1 Won, 0 Lost".
+        # PIPELINE_STAGES indices:
+        #   0=Lead, 1=MQL, 2=Discovery Call, 3=Demo Scheduled, 4=Demo Done,
+        #   5=Technical Validation, 6=Security Review, 7=Proposal Sent,
+        #   8=Negotiation, 9=Contract Sent, 10=Won, 11=Lost
 
         deals_spec = [
             # (title, company, contact, owner, stage_idx, value, deal_type, days_ago_created)
-            ("Acme Platform License", acme, alice, admin, 0, 15000.00, "new_business", 30),
-            ("Acme Cloud Migration", acme, bob, manager, 1, 45000.00, "new_business", 25),
-            ("Acme Support Renewal", acme, alice, rep, 2, 12000.00, "renewal", 22),
-            ("Globex CRM Expansion", globex, carol, admin, 3, 30000.00, "expansion", 20),
-            ("Globex Analytics Suite", globex, david, manager, 4, 60000.00, "new_business", 18),
-            ("Globex API Integration", globex, carol, rep, 5, 8500.00, "expansion", 15),
-            ("Initech Consulting Pkg", initech, eve, admin, 6, 22000.00, "new_business", 14),
-            ("Initech Data Audit", initech, eve, manager, 7, 9500.00, "new_business", 12),
-            ("Initech Retainer 2026", initech, eve, rep, 8, 36000.00, "renewal", 10),
-            ("Acme Enterprise Suite", acme, alice, admin, 9, 120000.00, "new_business", 5),
+            ("Acme Platform License",   acme,   alice,  admin,   0,  15000.00, "new_business", 30),
+            ("Acme Cloud Migration",    acme,   bob,    manager, 1,  45000.00, "new_business", 25),
+            ("Acme Support Renewal",    acme,   alice,  rep,     2,  12000.00, "renewal",       22),
+            ("Globex CRM Expansion",    globex, carol,  admin,   3,  30000.00, "expansion",     20),
+            ("Globex Analytics Suite",  globex, david,  manager, 4,  60000.00, "new_business", 18),
+            ("Globex API Integration",  globex, carol,  rep,     5,   8500.00, "expansion",     15),
+            ("Initech Consulting Pkg",  initech, eve,   admin,   6,  22000.00, "new_business", 14),
+            ("Initech Data Audit",      initech, eve,   manager, 7,   9500.00, "new_business", 12),
+            ("Initech Retainer 2026",   initech, eve,   rep,     8,  36000.00, "renewal",       10),
+            ("Acme Contract Renewal",   acme,   bob,    manager, 9,  55000.00, "renewal",        7),
+            ("Acme Enterprise Suite",   acme,   alice,  admin,  10, 120000.00, "new_business",   5),
         ]
 
         deal_objs: list[Deal] = []
         for title, company, contact, owner, stage_idx, value, deal_type, created_days_ago in deals_spec:
             stage = PIPELINE_STAGES[stage_idx]
-            is_won = stage == "Closed Won"
+            is_won = stage == "Won"
             d = Deal(
                 id=uuid.uuid4(),
                 title=title,
@@ -319,17 +320,17 @@ async def seed() -> None:
 def _stage_probability(stage: str) -> int:
     mapping = {
         "Lead": 10,
-        "Qualified": 20,
-        "Meeting Scheduled": 30,
-        "Proposal Sent": 40,
-        "Negotiation": 50,
-        "Contract Sent": 60,
-        "Legal Review": 70,
-        "Procurement": 75,
-        "Verbal Commit": 85,
-        "Closed Won": 100,
-        "Closed Lost": 0,
-        "On Hold": 25,
+        "MQL": 20,
+        "Discovery Call": 30,
+        "Demo Scheduled": 40,
+        "Demo Done": 50,
+        "Technical Validation": 60,
+        "Security Review": 65,
+        "Proposal Sent": 70,
+        "Negotiation": 80,
+        "Contract Sent": 90,
+        "Won": 100,
+        "Lost": 0,
     }
     return mapping.get(stage, 50)
 

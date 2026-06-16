@@ -95,6 +95,7 @@ export function formatDate(date: Date | string): string {
  */
 export function getStageBadgeColor(stage: string): string {
   const map: Record<string, string> = {
+    // Legacy stage names
     'Lead': 'bg-gray-100 text-gray-700',
     'Qualified': 'bg-blue-100 text-blue-700',
     'Meeting Scheduled': 'bg-cyan-100 text-cyan-700',
@@ -107,6 +108,15 @@ export function getStageBadgeColor(stage: string): string {
     'Closed Won': 'bg-green-100 text-green-700',
     'Closed Lost': 'bg-red-100 text-red-700',
     'On Hold': 'bg-slate-100 text-slate-700',
+    // Backend v1 stage names
+    'MQL': 'bg-blue-100 text-blue-700',
+    'Discovery Call': 'bg-cyan-100 text-cyan-700',
+    'Demo Scheduled': 'bg-sky-100 text-sky-700',
+    'Demo Done': 'bg-indigo-100 text-indigo-700',
+    'Technical Validation': 'bg-violet-100 text-violet-700',
+    'Security Review': 'bg-purple-100 text-purple-700',
+    'Won': 'bg-green-100 text-green-700',
+    'Lost': 'bg-red-100 text-red-700',
   }
   return map[stage] ?? 'bg-gray-100 text-gray-600'
 }

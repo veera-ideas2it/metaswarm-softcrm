@@ -97,7 +97,7 @@ async function getContacts(
   if (params.per_page != null) searchParams.per_page = String(params.per_page)
 
   const { data } = await apiClient.get<PaginatedResponse<ContactListItem>>(
-    '/v1/contacts',
+    '/api/v1/contacts',
     { params: searchParams },
   )
   return data
@@ -105,7 +105,7 @@ async function getContacts(
 
 async function getContact(id: string): Promise<ContactResponse> {
   const { data } = await apiClient.get<ApiResponse<ContactResponse>>(
-    `/v1/contacts/${id}`,
+    `/api/v1/contacts/${id}`,
   )
   return data.data!
 }
@@ -114,7 +114,7 @@ async function createContact(
   payload: CreateContactPayload,
 ): Promise<ContactResponse> {
   const { data } = await apiClient.post<ApiResponse<ContactResponse>>(
-    '/v1/contacts',
+    '/api/v1/contacts',
     payload,
   )
   return data.data!
@@ -125,14 +125,14 @@ async function updateContact(
   payload: UpdateContactPayload,
 ): Promise<ContactResponse> {
   const { data } = await apiClient.patch<ApiResponse<ContactResponse>>(
-    `/v1/contacts/${id}`,
+    `/api/v1/contacts/${id}`,
     payload,
   )
   return data.data!
 }
 
 async function deleteContact(id: string): Promise<void> {
-  await apiClient.delete(`/v1/contacts/${id}`)
+  await apiClient.delete(`/api/v1/contacts/${id}`)
 }
 
 // ---------------------------------------------------------------------------

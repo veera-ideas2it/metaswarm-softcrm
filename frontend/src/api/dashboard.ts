@@ -49,7 +49,7 @@ export interface DashboardData {
 
 export async function getDashboardApi(): Promise<DashboardData> {
   const { data } = await apiClient.get<ApiResponse<DashboardData>>(
-    '/v1/reports/dashboard',
+    '/api/v1/reports/dashboard',
   )
   return data.data!
 }

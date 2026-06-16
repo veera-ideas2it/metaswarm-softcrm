@@ -12,7 +12,7 @@ export async function loginApi(
   email: string,
   password: string,
 ): Promise<TokenResponse> {
-  const { data } = await apiClient.post<TokenResponse>('/v1/auth/login', {
+  const { data } = await apiClient.post<TokenResponse>('/api/v1/auth/login', {
     email,
     password,
   })
@@ -20,11 +20,11 @@ export async function loginApi(
 }
 
 export async function logoutApi(): Promise<void> {
-  await apiClient.post('/v1/auth/logout')
+  await apiClient.post('/api/v1/auth/logout')
 }
 
 export async function getMeApi(): Promise<User> {
-  const { data } = await apiClient.get<User>('/v1/auth/me')
+  const { data } = await apiClient.get<User>('/api/v1/auth/me')
   return data
 }
 

@@ -83,7 +83,7 @@ async function getActivities(
   if (params.per_page != null) searchParams.per_page = String(params.per_page)
 
   const { data } = await apiClient.get<PaginatedResponse<ActivityResponse>>(
-    '/v1/activities',
+    '/api/v1/activities',
     { params: searchParams },
   )
   return data
@@ -93,7 +93,7 @@ async function createActivity(
   payload: CreateActivityPayload,
 ): Promise<ActivityResponse> {
   const { data } = await apiClient.post<ApiResponse<ActivityResponse>>(
-    '/v1/activities',
+    '/api/v1/activities',
     payload,
   )
   return data.data!
@@ -104,14 +104,14 @@ async function updateActivity(
   payload: UpdateActivityPayload,
 ): Promise<ActivityResponse> {
   const { data } = await apiClient.patch<ApiResponse<ActivityResponse>>(
-    `/v1/activities/${id}`,
+    `/api/v1/activities/${id}`,
     payload,
   )
   return data.data!
 }
 
 async function deleteActivity(id: string): Promise<void> {
-  await apiClient.delete(`/v1/activities/${id}`)
+  await apiClient.delete(`/api/v1/activities/${id}`)
 }
 
 // ---------------------------------------------------------------------------
