@@ -94,14 +94,22 @@ def create_app() -> FastAPI:
     # Routers – register as they are created
     # ---------------------------------------------------------------------------
     from app.routers import auth  # noqa: PLC0415
+    from app.routers import reports  # noqa: PLC0415
+    from app.routers import deals  # noqa: PLC0415
+    from app.routers import activities  # noqa: PLC0415
+    from app.routers import contacts  # noqa: PLC0415
+    from app.routers import companies  # noqa: PLC0415
+    from app.routers import settings  # noqa: PLC0415
 
     application.include_router(auth.router, prefix="/api/v1/auth")
-    # from app.routers import users, companies, contacts, deals, activities
+    application.include_router(reports.router, prefix="/api/v1/reports")
+    application.include_router(deals.router, prefix="/api/v1")
+    application.include_router(activities.router, prefix="/api/v1")
+    application.include_router(contacts.router, prefix="/api/v1")
+    application.include_router(companies.router, prefix="/api/v1")
+    application.include_router(settings.router, prefix="/api/v1")
+    # from app.routers import users
     # application.include_router(users.router, prefix="/api/v1")
-    # application.include_router(companies.router, prefix="/api/v1")
-    # application.include_router(contacts.router, prefix="/api/v1")
-    # application.include_router(deals.router, prefix="/api/v1")
-    # application.include_router(activities.router, prefix="/api/v1")
 
     # Health-check (no auth, no rate-limit)
     @application.get("/health", tags=["ops"])
